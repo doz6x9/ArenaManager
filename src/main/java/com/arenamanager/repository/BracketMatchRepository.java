@@ -1,0 +1,11 @@
+package com.arenamanager.repository;
+
+import com.arenamanager.domain.BracketMatch;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface BracketMatchRepository extends JpaRepository<BracketMatch, Long> {
+
+    List<BracketMatch> findByTournamentIdOrderByRoundNumberAscIdAsc(Long tournamentId);
+}
