@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: arena-manager
+  datasource:
+    url: jdbc:h2:mem:arenadb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+  thymeleaf:
+    cache: false
+
+security:
+  jwt:
+    secret: bXktdmVyeS1sb25nLWFyZW5hbWFuYWdlci1qd3Qtc2VjcmV0LWtleS0zMi1ieXRlcw==
+    expiration-ms: 3600000
+
+arena:
+  demo-data: true
