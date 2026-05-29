@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title}">API Routes</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <div>
+        <p class="eyebrow">ArenaManager</p>
+        <h1 th:text="${title}">API Routes</h1>
+    </div>
+    <nav class="top-actions" aria-label="API route navigation">
+        <a class="secondary link-button" th:href="${homePath}" th:text="${homeLabel}">Dashboard</a>
+        <a class="secondary link-button" th:href="@{/swagger-ui/index.html}">Swagger</a>
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit" class="secondary">Sign out</button>
+        </form>
+    </nav>
+</header>
+
+<main class="layout">
+    <section>
+        <div class="section-heading">
+            <div>
+                <h2>API Surface</h2>
+                <p class="muted">REST endpoints grouped by tournament domain and access level.</p>
+            </div>
+            <div class="status-strip compact-strip">
+                <span><b th:text="${routeCount}">0</b> total</span>
+                <span><b th:text="${captainRouteCount}">0</b> captain-readable</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="table-wrap route-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Domain</th>
+                <th>Access</th>
+                <th>Purpose</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="route : ${routes}">
+                <td>
+                    <span class="method-badge" th:classappend="${' method-' + #strings.toLowerCase(route.method)}" th:text="${route.method}">GET</span>
+                </td>
+                <td><code class="endpoint" th:text="${route.path}">/api/tournaments</code></td>
+                <td th:text="${route.area}">Tournaments</td>
+                <td><span class="pill" th:text="${route.access}">Captain</span></td>
+                <td th:text="${route.description}">Route purpose</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

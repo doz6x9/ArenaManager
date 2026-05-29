@@ -5,3 +5,5 @@ target/
 *.log
 .env
 .DS_Store
+.mvn/wrapper/dists/
+.mvn/wrapper/*.zip

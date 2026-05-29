@@ -3,6 +3,7 @@ package com.arenamanager.controller.web;
 import com.arenamanager.dto.ScoreUpdateForm;
 import com.arenamanager.service.MatchService;
 import com.arenamanager.service.TournamentService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,10 +26,14 @@ public class MatchWebController {
     }
 
     @GetMapping("/tournaments/{tournamentId}/bracket")
-    public String bracket(@PathVariable Long tournamentId, Model model) {
+    public String bracket(@PathVariable Long tournamentId, Model model, Authentication authentication) {
+        boolean canManageBracket = hasRole(authentication, "ROLE_ORGANIZER");
         model.addAttribute("tournament", tournamentService.getTournament(tournamentId));
         model.addAttribute("matches", matchService.listMatchesForTournament(tournamentId));
         model.addAttribute("scoreUpdateForm", new ScoreUpdateForm());
+        model.addAttribute("canManageBracket", canManageBracket);
+        model.addAttribute("homePath", canManageBracket ? "/admin/dashboard" : "/captain/dashboard");
+        model.addAttribute("homeLabel", canManageBracket ? "Organizer dashboard" : "Captain dashboard");
         return "bracket";
     }
 
@@ -39,10 +44,21 @@ public class MatchWebController {
         return "redirect:/tournaments/" + tournamentId + "/bracket";
     }
 
+    @GetMapping("/tournaments/{tournamentId}/bracket/generate")
+    public String generateBracketGet(@PathVariable Long tournamentId, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("success", "Use the Generate bracket button to update the bracket.");
+        return "redirect:/tournaments/" + tournamentId + "/bracket";
+    }
+
     @PostMapping("/matches/score")
     public String updateScore(@ModelAttribute ScoreUpdateForm form, RedirectAttributes redirectAttributes) {
         matchService.updateScore(form.getMatchId(), form.getHomeScore(), form.getAwayScore());
         redirectAttributes.addFlashAttribute("success", "Score updated");
         return "redirect:/tournaments/" + form.getTournamentId() + "/bracket";
+    }
+
+    private boolean hasRole(Authentication authentication, String role) {
+        return authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals(role));
     }
 }

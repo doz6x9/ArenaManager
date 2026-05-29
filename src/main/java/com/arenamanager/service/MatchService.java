@@ -1,5 +1,6 @@
 package com.arenamanager.service;
 
+import com.arenamanager.domain.AuditLog;
 import com.arenamanager.domain.BracketMatch;
 import com.arenamanager.domain.MatchStatus;
 import com.arenamanager.domain.Team;
@@ -9,8 +10,11 @@ import com.arenamanager.dto.MatchResponseDto;
 import com.arenamanager.exception.BusinessRuleException;
 import com.arenamanager.exception.ResourceNotFoundException;
 import com.arenamanager.mapper.MatchMapper;
+import com.arenamanager.repository.AuditLogRepository;
 import com.arenamanager.repository.BracketMatchRepository;
 import com.arenamanager.repository.TournamentRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +25,20 @@ public class MatchService {
 
     private final BracketMatchRepository bracketMatchRepository;
     private final TournamentRepository tournamentRepository;
+    private final AuditLogRepository auditLogRepository;
     private final TeamService teamService;
     private final MatchMapper matchMapper;
 
     public MatchService(
             BracketMatchRepository bracketMatchRepository,
             TournamentRepository tournamentRepository,
+            AuditLogRepository auditLogRepository,
             TeamService teamService,
             MatchMapper matchMapper
     ) {
         this.bracketMatchRepository = bracketMatchRepository;
         this.tournamentRepository = tournamentRepository;
+        this.auditLogRepository = auditLogRepository;
         this.teamService = teamService;
         this.matchMapper = matchMapper;
     }
@@ -65,10 +72,28 @@ public class MatchService {
         }
         BracketMatch match = bracketMatchRepository.findById(matchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Match not found: " + matchId));
+        int previousHomeScore = match.getHomeScore();
+        int previousAwayScore = match.getAwayScore();
         match.setHomeScore(homeScore);
         match.setAwayScore(awayScore);
         applyStatusAndWinner(match);
-        return matchMapper.toResponse(bracketMatchRepository.save(match));
+        BracketMatch savedMatch = bracketMatchRepository.save(match);
+        auditLogRepository.save(new AuditLog(
+                "MATCH_SCORE_UPDATED",
+                currentActor(),
+                "Score changed from " + previousHomeScore + "-" + previousAwayScore + " to " + homeScore + "-" + awayScore,
+                savedMatch.getTournament(),
+                savedMatch
+        ));
+        return matchMapper.toResponse(savedMatch);
+    }
+
+    private String currentActor() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getName() == null) {
+            return "system";
+        }
+        return authentication.getName();
     }
 
     private void validateRegistered(Tournament tournament, Team team) {

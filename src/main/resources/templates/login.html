@@ -7,24 +7,57 @@
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body class="auth-page">
-<main class="auth-shell">
-    <section class="auth-panel">
-        <p class="eyebrow">ArenaManager</p>
-        <h1>Organizer Login</h1>
+<main class="auth-shell auth-wide">
+    <section class="auth-panel login-panel">
+        <div class="auth-header">
+            <p class="eyebrow">ArenaManager</p>
+            <h1>Arena Login</h1>
+        </div>
+
         <form th:action="@{/login}" method="post" class="stack">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
             <label>
                 Username
-                <input name="username" type="text" autocomplete="username" required>
+                <input name="username" type="text" autocomplete="username" required autofocus>
             </label>
+
             <label>
                 Password
                 <input name="password" type="password" autocomplete="current-password" required>
             </label>
+
             <button type="submit">Sign in</button>
         </form>
-        <p class="notice" th:if="${param.error}">Invalid username or password.</p>
-        <p class="notice" th:if="${param.logout}">You have signed out.</p>
+
+        <p class="message error-message" th:if="${param.error}">
+            Invalid username or password.
+        </p>
+        <p class="message success-message" th:if="${param.logout}">
+            You have signed out.
+        </p>
+
+        <div class="credential-grid">
+            <article>
+                <span>Organizer</span>
+                <code>organizer / password</code>
+                <p>Bracket generation, score updates, reporting, and roster setup.</p>
+            </article>
+            <article>
+                <span>Captain</span>
+                <code>captain / password</code>
+                <p>Read-only brackets, tournament status, team directory, and API route access.</p>
+            </article>
+            <article>
+                <span>Player</span>
+                <code>player / password</code>
+                <p>Read-only tournament, roster, and bracket access.</p>
+            </article>
+        </div>
+
+        <div class="auth-links">
+            <a class="secondary link-button" th:href="@{/swagger-ui/index.html}">Open Swagger</a>
+        </div>
     </section>
 </main>
 </body>

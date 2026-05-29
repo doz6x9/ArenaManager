@@ -3,16 +3,90 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ArenaManager Error</title>
+    <title>ArenaManager - Error</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+        }
+
+        .auth-shell {
+            width: min(100%, 480px);
+            padding: 24px;
+        }
+
+        .auth-panel {
+            padding: 40px 32px;
+        }
+
+        .error-icon {
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .error-content {
+            text-align: center;
+        }
+
+        .error-header h1 {
+            color: #dc2626;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            color: #991b1b;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 480px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="auth-page">
 <main class="auth-shell">
     <section class="auth-panel">
-        <p class="eyebrow">ArenaManager</p>
-        <h1>Something needs attention</h1>
-        <p th:text="${message}">The request could not be completed.</p>
-        <a class="primary-link" th:href="@{/admin/dashboard}">Back to dashboard</a>
+        <div class="error-content">
+            <div class="error-icon">⚠️</div>
+            <div class="error-header">
+                <p class="eyebrow">ArenaManager</p>
+                <h1>Something went wrong</h1>
+            </div>
+            <p class="muted">An error occurred while processing your request.</p>
+
+            <div class="error-message" th:if="${message}">
+                <strong>Error Details:</strong><br>
+                <span th:text="${message}">The request could not be completed.</span>
+            </div>
+
+            <div class="action-buttons">
+                <a class="link-button secondary" th:href="@{/admin/dashboard}">
+                    ← Dashboard
+                </a>
+                <a class="link-button" th:href="@{/}">
+                    Home
+                </a>
+            </div>
+        </div>
     </section>
 </main>
 </body>

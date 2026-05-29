@@ -2,6 +2,7 @@ package com.arenamanager.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 @Configuration
 @EnableWebSecurity
@@ -26,15 +29,50 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/h2-console/**"))
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/css/**", "/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/", "/login", "/error", "/css/**", "/h2-console/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/**").authenticated()
-                        .requestMatchers("/admin/**", "/tournaments/**", "/matches/**").hasRole("ORGANIZER")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/tournaments", "/api/tournaments/**",
+                                "/api/teams", "/api/teams/**",
+                                "/api/players", "/api/players/**",
+                                "/api/matches", "/api/matches/**").hasAnyRole("ORGANIZER", "CAPTAIN", "PLAYER")
+                        .requestMatchers("/api/reports/**").hasRole("ORGANIZER")
+                        .requestMatchers("/api/**").hasRole("ORGANIZER")
+                        .requestMatchers("/admin/**").hasRole("ORGANIZER")
+                        .requestMatchers("/captain/**").hasRole("CAPTAIN")
+                        .requestMatchers("/player/**").hasRole("PLAYER")
+                        .requestMatchers("/tournaments/*/bracket/generate", "/matches/**").hasRole("ORGANIZER")
+                        .requestMatchers(HttpMethod.GET, "/tournaments", "/tournaments/*/bracket").hasAnyRole("ORGANIZER", "CAPTAIN", "PLAYER")
+
+                        .requestMatchers("/tournaments/**").hasRole("ORGANIZER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/admin/dashboard", true)
+                        .successHandler((request, response, authentication) -> {
+                            boolean isOrganizer = authentication.getAuthorities().stream()
+                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANIZER"));
+                            boolean isCaptain = authentication.getAuthorities().stream()
+                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_CAPTAIN"));
+                            boolean isPlayer = authentication.getAuthorities().stream()
+                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_PLAYER"));
+
+                            if (isOrganizer) {
+                                SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
+                                if (savedRequest == null) {
+                                    response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+                                } else {
+                                    response.sendRedirect(savedRequest.getRedirectUrl());
+                                }
+                            } else if (isCaptain) {
+                                response.sendRedirect(request.getContextPath() + "/captain/dashboard");
+                            } else if (isPlayer) {
+                                response.sendRedirect(request.getContextPath() + "/player/dashboard");
+
+                            } else {
+                                response.sendRedirect(request.getContextPath() + "/");
+                            }
+                        })
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -57,8 +95,14 @@ public class SecurityConfig {
                 .password(passwordEncoder.encode("password"))
                 .roles("CAPTAIN")
                 .build();
-        return new InMemoryUserDetailsManager(organizer, captain);
+       //return new InMemoryUserDetailsManager(organizer, captain);
+        UserDetails player = User.withUsername("player")
+                .password(passwordEncoder.encode("password"))
+                .roles("PLAYER")
+                .build();
+        return new InMemoryUserDetailsManager(organizer, captain, player);
     }
+
 
     @Bean
     PasswordEncoder passwordEncoder() {

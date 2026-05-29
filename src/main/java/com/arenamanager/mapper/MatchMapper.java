@@ -2,29 +2,13 @@ package com.arenamanager.mapper;
 
 import com.arenamanager.domain.BracketMatch;
 import com.arenamanager.dto.MatchResponseDto;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class MatchMapper {
+@Mapper(config = ArenaMapperConfig.class, uses = TeamMapper.class)
+public interface MatchMapper {
 
-    private final TeamMapper teamMapper;
-
-    public MatchMapper(TeamMapper teamMapper) {
-        this.teamMapper = teamMapper;
-    }
-
-    public MatchResponseDto toResponse(BracketMatch match) {
-        return new MatchResponseDto(
-                match.getId(),
-                match.getTournament().getId(),
-                teamMapper.toSummary(match.getHomeTeam()),
-                teamMapper.toSummary(match.getAwayTeam()),
-                teamMapper.toSummary(match.getWinnerTeam()),
-                match.getRoundNumber(),
-                match.getBestOf(),
-                match.getHomeScore(),
-                match.getAwayScore(),
-                match.getStatus().name()
-        );
-    }
+    @Mapping(target = "tournamentId", source = "tournament.id")
+    @Mapping(target = "status", expression = "java(match.getStatus().name())")
+    MatchResponseDto toResponse(BracketMatch match);
 }

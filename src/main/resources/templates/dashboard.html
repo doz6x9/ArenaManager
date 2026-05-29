@@ -10,21 +10,67 @@
 <header class="topbar">
     <div>
         <p class="eyebrow">ArenaManager</p>
-        <h1>Organizer Dashboard</h1>
+        <h1>Match Control</h1>
     </div>
-    <form th:action="@{/logout}" method="post">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <button type="submit" class="secondary">Sign out</button>
-    </form>
+    <nav class="top-actions" aria-label="Organizer navigation">
+        <a class="secondary link-button" th:href="@{/tournaments}">Tournaments</a>
+        <a class="secondary link-button" th:href="@{/admin/api-routes}">API routes</a>
+        <a class="secondary link-button" th:href="@{/swagger-ui/index.html}">Swagger</a>
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit" class="secondary">Sign out</button>
+        </form>
+    </nav>
 </header>
 
 <main class="layout">
+    <section th:if="${success} or ${error}">
+        <p class="message success-message" th:if="${success}" th:text="${success}">Updated</p>
+        <p class="message error-message" th:if="${error}" th:text="${error}">Error</p>
+    </section>
+
     <section>
         <div class="section-heading">
-            <h2>Tournaments</h2>
-            <a class="secondary link-button" th:href="@{/swagger-ui/index.html}">Swagger</a>
+            <div>
+                <h2>Control Room</h2>
+                <p class="muted">Tournament load, bracket state, and score activity at a glance.</p>
+            </div>
+            <a class="primary-link" th:href="@{/api/reports/dashboard}">Metrics API</a>
         </div>
-        <div class="grid">
+        <div class="metric-grid">
+            <article class="metric">
+                <span>Tournaments</span>
+                <strong th:text="${metrics.tournamentCount}">0</strong>
+            </article>
+            <article class="metric">
+                <span>Teams</span>
+                <strong th:text="${metrics.teamCount}">0</strong>
+            </article>
+            <article class="metric">
+                <span>Players</span>
+                <strong th:text="${metrics.playerCount}">0</strong>
+            </article>
+            <article class="metric">
+                <span>Audit Events</span>
+                <strong th:text="${metrics.auditEventCount}">0</strong>
+            </article>
+        </div>
+        <div class="status-strip">
+            <span><b th:text="${metrics.scheduledMatches}">0</b> scheduled</span>
+            <span><b th:text="${metrics.inProgressMatches}">0</b> in progress</span>
+            <span><b th:text="${metrics.completedMatches}">0</b> completed</span>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-heading">
+            <div>
+                <h2>Active Events</h2>
+                <p class="muted">Open an event desk to build rounds or record match results.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('teamModal').classList.add('active')">Create team</button>
+        </div>
+        <div class="grid" th:if="${!#lists.isEmpty(tournaments)}">
             <article class="card" th:each="tournament : ${tournaments}">
                 <div class="card-head">
                     <div>
@@ -37,29 +83,95 @@
                 <a class="primary-link" th:href="@{/tournaments/{id}/bracket(id=${tournament.id})}">Open bracket</a>
             </article>
         </div>
+        <p class="empty-state" th:if="${#lists.isEmpty(tournaments)}">No tournaments have been created yet.</p>
     </section>
 
     <section>
-        <h2>Teams</h2>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                <tr>
-                    <th>Tag</th>
-                    <th>Name</th>
-                    <th>Roster</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="team : ${teams}">
-                    <td th:text="${team.tag}">PXF</td>
-                    <td th:text="${team.name}">Pixel Forge</td>
-                    <td th:text="|${team.rosterCount}/${team.maxRosterSize}|">2/5</td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="split">
+            <div>
+                <div class="section-heading compact">
+                    <h2>Team Registry</h2>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Tag</th>
+                            <th>Name</th>
+                            <th>Roster</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="team : ${teams}">
+                            <td><span class="team-chip" th:text="${team.tag}">SEN</span></td>
+                            <td th:text="${team.name}">Sentinels</td>
+                            <td th:text="|${team.rosterCount}/${team.maxRosterSize}|">2/5</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(teams)}">
+                            <td colspan="3">No teams are registered yet.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <div class="section-heading compact">
+                    <h2>Score Audit</h2>
+                    <a class="primary-link" th:href="@{/api/reports/audit}">Audit API</a>
+                </div>
+                <div class="audit-list">
+                    <article class="audit-item" th:each="event : ${auditEvents}">
+                        <div>
+                            <strong th:text="${event.action}">MATCH_SCORE_UPDATED</strong>
+                            <p th:text="${event.details}">Score changed</p>
+                        </div>
+                        <span th:text="${event.actor}">organizer</span>
+                    </article>
+                    <p class="empty-state" th:if="${#lists.isEmpty(auditEvents)}">No score changes recorded yet.</p>
+                </div>
+            </div>
         </div>
     </section>
+
+    <div class="modal-overlay" id="teamModal">
+        <div class="modal-content">
+            <button class="modal-close" type="button" onclick="document.getElementById('teamModal').classList.remove('active')">x</button>
+            <div class="modal-header">
+                <h2>Create Team</h2>
+                <p class="muted">Register a squad shell for upcoming brackets.</p>
+            </div>
+            <form th:action="@{/admin/teams}" method="post" class="stack">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <label>
+                    Team Name
+                    <input name="name" type="text" placeholder="Sentinels" required>
+                </label>
+
+                <label>
+                    Team Tag
+                    <input name="tag" type="text" placeholder="SEN" maxlength="4" required>
+                </label>
+
+                <label>
+                    Max Roster Size
+                    <input name="maxRosterSize" type="number" min="1" max="20" value="5" required>
+                </label>
+
+                <div class="modal-actions">
+                    <button type="button" onclick="document.getElementById('teamModal').classList.remove('active')" class="secondary">Cancel</button>
+                    <button type="submit">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </main>
+<script>
+    document.getElementById('teamModal').addEventListener('click', function (event) {
+        if (event.target === this) {
+            this.classList.remove('active');
+        }
+    });
+</script>
 </body>
 </html>

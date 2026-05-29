@@ -1,0 +1,25 @@
+image: maven:3.9-eclipse-temurin-21
+
+stages:
+  - test
+  - package
+
+cache:
+  paths:
+    - .m2/repository
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+test:
+  stage: test
+  script:
+    - mvn test
+
+package:
+  stage: package
+  script:
+    - mvn -DskipTests package
+  artifacts:
+    paths:
+      - target/*.jar

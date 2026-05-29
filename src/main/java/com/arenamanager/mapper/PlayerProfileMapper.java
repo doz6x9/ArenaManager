@@ -2,26 +2,12 @@ package com.arenamanager.mapper;
 
 import com.arenamanager.domain.PlayerProfile;
 import com.arenamanager.dto.PlayerProfileDto;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
-@Component
-public class PlayerProfileMapper {
+@Mapper(config = ArenaMapperConfig.class)
+public interface PlayerProfileMapper {
 
-    public PlayerProfile toEntity(PlayerProfileDto dto) {
-        if (dto == null) {
-            return null;
-        }
-        return new PlayerProfile(dto.preferredPeripheralDpi(), dto.mouseGripStyle(), dto.bio());
-    }
+    PlayerProfile toEntity(PlayerProfileDto dto);
 
-    public PlayerProfileDto toDto(PlayerProfile profile) {
-        if (profile == null) {
-            return null;
-        }
-        return new PlayerProfileDto(
-                profile.getPreferredPeripheralDpi(),
-                profile.getMouseGripStyle(),
-                profile.getBio()
-        );
-    }
+    PlayerProfileDto toDto(PlayerProfile profile);
 }

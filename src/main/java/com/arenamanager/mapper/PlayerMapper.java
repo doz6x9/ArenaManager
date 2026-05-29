@@ -1,35 +1,18 @@
 package com.arenamanager.mapper;
 
 import com.arenamanager.domain.Player;
-import com.arenamanager.domain.Team;
 import com.arenamanager.dto.PlayerRequestDto;
 import com.arenamanager.dto.PlayerResponseDto;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class PlayerMapper {
+@Mapper(config = ArenaMapperConfig.class, uses = PlayerProfileMapper.class)
+public interface PlayerMapper {
 
-    private final PlayerProfileMapper playerProfileMapper;
+    @Mapping(target = "team", ignore = true)
+    Player toEntity(PlayerRequestDto dto);
 
-    public PlayerMapper(PlayerProfileMapper playerProfileMapper) {
-        this.playerProfileMapper = playerProfileMapper;
-    }
-
-    public Player toEntity(PlayerRequestDto dto) {
-        Player player = new Player(dto.username(), dto.email());
-        player.setProfile(playerProfileMapper.toEntity(dto.profile()));
-        return player;
-    }
-
-    public PlayerResponseDto toResponse(Player player) {
-        Team team = player.getTeam();
-        return new PlayerResponseDto(
-                player.getId(),
-                player.getUsername(),
-                player.getEmail(),
-                team == null ? null : team.getId(),
-                team == null ? null : team.getName(),
-                playerProfileMapper.toDto(player.getProfile())
-        );
-    }
+    @Mapping(target = "teamId", source = "team.id")
+    @Mapping(target = "teamName", source = "team.name")
+    PlayerResponseDto toResponse(Player player);
 }

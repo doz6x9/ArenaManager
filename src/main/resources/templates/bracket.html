@@ -12,44 +12,75 @@
         <p class="eyebrow" th:text="${tournament.gameTitle}">Game</p>
         <h1 th:text="${tournament.name}">Tournament</h1>
     </div>
-    <a class="secondary link-button" th:href="@{/admin/dashboard}">Dashboard</a>
+    <nav class="top-actions" aria-label="Bracket navigation">
+        <a class="secondary link-button" th:href="${homePath}" th:text="${homeLabel}">Dashboard</a>
+        <a class="secondary link-button" th:href="@{/api-routes}">API routes</a>
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit" class="secondary">Sign out</button>
+        </form>
+    </nav>
 </header>
 
 <main class="layout">
     <section class="section-heading">
         <div>
-            <h2>Live Bracket</h2>
+            <h2>Bracket Board</h2>
             <p class="muted" th:text="|${#lists.size(tournament.registeredTeams)} registered teams|">Registered teams</p>
         </div>
-        <form th:action="@{/tournaments/{id}/bracket/generate(id=${tournament.id})}" method="post">
+        <form th:if="${canManageBracket}" th:action="@{/tournaments/{id}/bracket/generate(id=${tournament.id})}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             <button type="submit">Generate bracket</button>
         </form>
+        <span th:unless="${canManageBracket}" class="pill">Read-only</span>
     </section>
 
-    <p class="success" th:if="${success}" th:text="${success}">Updated</p>
+    <p class="message success-message" th:if="${success}" th:text="${success}">Updated</p>
 
-    <section class="match-list">
+    <section th:if="${#lists.isEmpty(matches)}" class="empty-state centered-state">
+        <h2>No Matches Yet</h2>
+        <p class="muted">The board will populate after the organizer generates round one.</p>
+        <form th:if="${canManageBracket}" th:action="@{/tournaments/{id}/bracket/generate(id=${tournament.id})}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit">Create first round</button>
+        </form>
+    </section>
+
+    <section class="match-list" th:if="${!#lists.isEmpty(matches)}">
         <article class="match-row" th:each="match : ${matches}">
             <div class="match-meta">
                 <span class="pill" th:text="|Round ${match.roundNumber}|">Round 1</span>
-                <span class="muted" th:text="${match.status}">SCHEDULED</span>
+                <span class="muted strong-text" th:text="${match.status}">SCHEDULED</span>
             </div>
-            <form th:action="@{/matches/score}" method="post" class="score-form">
+
+            <form th:if="${canManageBracket}" th:action="@{/matches/score}" method="post" class="score-form">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <input type="hidden" name="matchId" th:value="${match.id}">
                 <input type="hidden" name="tournamentId" th:value="${tournament.id}">
                 <label>
                     <span th:text="${match.homeTeam != null ? match.homeTeam.tag : 'TBD'}">HOME</span>
-                    <input type="number" min="0" name="homeScore" th:value="${match.homeScore}">
+                    <input type="number" min="0" name="homeScore" th:value="${match.homeScore}" placeholder="0">
                 </label>
                 <span class="versus">vs</span>
                 <label>
                     <span th:text="${match.awayTeam != null ? match.awayTeam.tag : 'BYE'}">AWAY</span>
-                    <input type="number" min="0" name="awayScore" th:value="${match.awayScore}">
+                    <input type="number" min="0" name="awayScore" th:value="${match.awayScore}" placeholder="0">
                 </label>
                 <button type="submit">Save</button>
             </form>
+
+            <div th:unless="${canManageBracket}" class="readonly-score">
+                <div class="score-box">
+                    <span th:text="${match.homeTeam != null ? match.homeTeam.tag : 'TBD'}">HOME</span>
+                    <strong th:text="${match.homeScore}">0</strong>
+                </div>
+                <span class="versus">vs</span>
+                <div class="score-box">
+                    <span th:text="${match.awayTeam != null ? match.awayTeam.tag : 'BYE'}">AWAY</span>
+                    <strong th:text="${match.awayScore}">0</strong>
+                </div>
+            </div>
+
             <p class="winner" th:if="${match.winnerTeam != null}" th:text="|Winner: ${match.winnerTeam.name}|">Winner</p>
         </article>
     </section>
