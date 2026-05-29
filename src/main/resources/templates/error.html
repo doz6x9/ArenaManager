@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ArenaManager Error</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="auth-shell">
+    <section class="auth-panel">
+        <p class="eyebrow">ArenaManager</p>
+        <h1>Something needs attention</h1>
+        <p th:text="${message}">The request could not be completed.</p>
+        <a class="primary-link" th:href="@{/admin/dashboard}">Back to dashboard</a>
+    </section>
+</main>
+</body>
+</html>
