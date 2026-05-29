@@ -1,9 +1,10 @@
 package com.arenamanager.controller.web;
 
 import com.arenamanager.dto.TeamRequestDto;
+import com.arenamanager.service.PlayerService;
+import com.arenamanager.service.ReportingService;
 import com.arenamanager.service.TeamService;
 import com.arenamanager.service.TournamentService;
-import com.arenamanager.service.ReportingService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +19,17 @@ public class AdminDashboardController {
 
     private final TournamentService tournamentService;
     private final TeamService teamService;
+    private final PlayerService playerService;
     private final ReportingService reportingService;
 
-    public AdminDashboardController(TournamentService tournamentService, TeamService teamService, ReportingService reportingService) {
+    public AdminDashboardController(
+            TournamentService tournamentService,
+            TeamService teamService,
+            PlayerService playerService,
+            ReportingService reportingService) {
         this.tournamentService = tournamentService;
         this.teamService = teamService;
+        this.playerService = playerService;
         this.reportingService = reportingService;
     }
 
@@ -30,6 +37,7 @@ public class AdminDashboardController {
     public String dashboard(Model model) {
         model.addAttribute("tournaments", tournamentService.listTournaments());
         model.addAttribute("teams", teamService.listTeams());
+        model.addAttribute("players", playerService.listPlayers());
         model.addAttribute("metrics", reportingService.dashboardMetrics());
         model.addAttribute("auditEvents", reportingService.recentAuditEvents());
         return "dashboard";

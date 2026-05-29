@@ -122,6 +122,39 @@
             </div>
         </div>
     </section>
+
+    <section>
+        <div class="section-heading">
+            <div>
+                <h2>Roster Intel</h2>
+                <p class="muted">Player handles, teams, and competitive setup notes.</p>
+            </div>
+            <a class="primary-link" th:href="@{/api/players}">Players API</a>
+        </div>
+        <div class="player-grid" th:if="${!#lists.isEmpty(players)}">
+            <article class="player-card" th:each="player : ${players}">
+                <div class="player-card-head">
+                    <div>
+                        <h3 th:text="${player.username}">TenZ</h3>
+                        <p th:text="${player.teamName ?: 'Free agent'}">Sentinels</p>
+                    </div>
+                    <span class="team-chip" th:text="${player.teamName ?: 'FA'}">SEN</span>
+                </div>
+                <dl class="loadout-list">
+                    <div>
+                        <dt>DPI</dt>
+                        <dd th:text="${player.profile != null and player.profile.preferredPeripheralDpi != null ? player.profile.preferredPeripheralDpi : 'Unset'}">800</dd>
+                    </div>
+                    <div>
+                        <dt>Grip</dt>
+                        <dd th:text="${player.profile != null and player.profile.mouseGripStyle != null ? player.profile.mouseGripStyle : 'Unset'}">Claw</dd>
+                    </div>
+                </dl>
+                <p class="profile-note" th:text="${player.profile != null and player.profile.bio != null ? player.profile.bio : 'No profile notes have been added.'}">Explosive entry player.</p>
+            </article>
+        </div>
+        <p class="empty-state" th:if="${#lists.isEmpty(players)}">No player profiles are registered yet.</p>
+    </section>
 </main>
 </body>
 </html>

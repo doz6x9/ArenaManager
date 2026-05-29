@@ -133,6 +133,45 @@
         </div>
     </section>
 
+    <section>
+        <div class="section-heading">
+            <div>
+                <h2>Player Loadouts</h2>
+                <p class="muted">Roster identities, assigned teams, and player profile settings.</p>
+            </div>
+            <a class="primary-link" th:href="@{/api/players}">Players API</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Handle</th>
+                    <th>Email</th>
+                    <th>Team</th>
+                    <th>DPI</th>
+                    <th>Grip</th>
+                    <th>Profile notes</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="player : ${players}">
+                    <td><strong th:text="${player.username}">TenZ</strong></td>
+                    <td th:text="${player.email}">player@example.com</td>
+                    <td>
+                        <span class="team-chip" th:text="${player.teamName ?: 'Free'}">SEN</span>
+                    </td>
+                    <td th:text="${player.profile != null and player.profile.preferredPeripheralDpi != null ? player.profile.preferredPeripheralDpi + ' DPI' : 'Unset'}">800 DPI</td>
+                    <td th:text="${player.profile != null and player.profile.mouseGripStyle != null ? player.profile.mouseGripStyle : 'Unset'}">Claw</td>
+                    <td class="table-note" th:text="${player.profile != null and player.profile.bio != null ? player.profile.bio : 'No notes added.'}">Entry duelist.</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(players)}">
+                    <td colspan="6">No players are registered yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <div class="modal-overlay" id="teamModal">
         <div class="modal-content">
             <button class="modal-close" type="button" onclick="document.getElementById('teamModal').classList.remove('active')">x</button>

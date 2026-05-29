@@ -1,6 +1,7 @@
 package com.arenamanager.controller.web;
 
 import com.arenamanager.service.ApiRouteCatalogService;
+import com.arenamanager.service.PlayerService;
 import com.arenamanager.service.ReportingService;
 import com.arenamanager.service.TeamService;
 import com.arenamanager.service.TournamentService;
@@ -15,16 +16,19 @@ public class PlayerDashboardController {
 
     private final TournamentService tournamentService;
     private final TeamService teamService;
+    private final PlayerService playerService;
     private final ReportingService reportingService;
     private final ApiRouteCatalogService apiRouteCatalogService;
 
     public PlayerDashboardController(
             TournamentService tournamentService,
             TeamService teamService,
+            PlayerService playerService,
             ReportingService reportingService,
             ApiRouteCatalogService apiRouteCatalogService) {
         this.tournamentService = tournamentService;
         this.teamService = teamService;
+        this.playerService = playerService;
         this.reportingService = reportingService;
         this.apiRouteCatalogService = apiRouteCatalogService;
     }
@@ -33,6 +37,7 @@ public class PlayerDashboardController {
     public String dashboard(Model model) {
         model.addAttribute("tournaments", tournamentService.listTournaments());
         model.addAttribute("teams", teamService.listTeams());
+        model.addAttribute("players", playerService.listPlayers());
         model.addAttribute("metrics", reportingService.dashboardMetrics());
         model.addAttribute("apiRoutes", apiRouteCatalogService.playerRoutes());
         return "player-dashboard";

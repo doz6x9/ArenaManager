@@ -424,6 +424,12 @@ input:focus {
     margin-top: 0;
 }
 
+.table-note {
+    max-width: 360px;
+    color: var(--muted);
+    line-height: 1.45;
+}
+
 .split {
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
@@ -464,6 +470,74 @@ tr:last-child td {
     display: grid;
     gap: 12px;
     margin-top: 16px;
+}
+
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.player-card {
+    min-height: 220px;
+    padding: 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 2px;
+    display: grid;
+    gap: 14px;
+}
+
+.player-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.player-card-head p {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.loadout-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0;
+}
+
+.loadout-list div {
+    min-height: 66px;
+    padding: 10px 12px;
+    background: var(--page-soft);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    display: grid;
+    align-content: center;
+    gap: 4px;
+}
+
+.loadout-list dt {
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.loadout-list dd {
+    margin: 0;
+    color: var(--ink-strong);
+    font-weight: 900;
+}
+
+.profile-note {
+    color: var(--muted);
+    line-height: 1.45;
+    font-size: 0.9rem;
 }
 
 .audit-item,
