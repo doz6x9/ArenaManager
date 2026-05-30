@@ -1,35 +1,292 @@
 # ArenaManager
 
-ArenaManager is a Spring Boot 3, Java 21 backend for esports and LAN tournament operations. It gives organizers a secure dashboard for managing brackets and scores, while team captains and API consumers can retrieve tournament data through JWT-protected REST endpoints.
+ArenaManager is a Java 21 and Spring Boot esports tournament platform for managing LAN events, team rosters, brackets, match scores, and live operational metrics.
 
-The project is designed to demonstrate a professional backend architecture: layered services, strict JPA relationships, DTO boundaries, generated MapStruct mappers, role-aware security, auditability, dashboard metrics, Docker packaging, and GitLab CI.
+It has two faces:
 
-## Key Features
+- A Thymeleaf web dashboard for organizers, captains, and players.
+- A JWT-secured REST API for API consumers and team-facing tournament data.
 
-- Dual access model: REST API for captains and server-rendered Thymeleaf UI for organizers.
-- Role-based security: organizer session login and JWT authentication for API clients.
-- Tournament lifecycle: team registration, bracket generation, match score updates, and winner detection.
-- Roster integrity: team capacity checks and player assignment validation.
-- Audit trail: match score changes are recorded with actor, match, tournament, and change details.
-- Operational dashboard: live counts for tournaments, teams, players, match statuses, and audit events.
-- Reporting endpoints: dashboard and audit data exposed through JSON APIs.
+The project is built to demonstrate a layered backend architecture with clean controller/service/repository separation, JPA relationships, DTO boundaries, MapStruct mappers, role-based security, audit logs, Docker packaging, and GitLab CI.
 
-## Tech Stack
+## Current Stack
 
-- Java 21
-- Spring Boot 3.3
-- Spring Security
-- Spring Data JPA
-- Thymeleaf
-- H2 in-memory database
-- JJWT
-- MapStruct
-- Lombok
-- Jakarta Validation
-- OpenAPI 3 / Swagger UI
-- Maven Wrapper
-- Docker
-- GitLab CI
+| Area | Technology |
+| --- | --- |
+| Language | Java 21 |
+| Framework | Spring Boot 3.3.5 |
+| Build | Maven Wrapper, Maven 3.9+ |
+| Web UI | Thymeleaf, custom CSS |
+| API | Spring MVC REST, OpenAPI/Swagger |
+| Security | Spring Security, form login, JWT |
+| Persistence | Spring Data JPA |
+| Database | H2 in-memory database |
+| Mapping | MapStruct 1.6.3 |
+| Utilities | Lombok, Jakarta Validation |
+| Packaging | Docker multi-stage build |
+| CI | GitLab CI |
+
+## Features
+
+- Organizer dashboard for tournaments, teams, match control, metrics, and audit activity.
+- Captain dashboard for registered squads, live brackets, and readable API route access.
+- Player dashboard for tournament visibility, roster context, and read-only event data.
+- JWT token endpoint for REST clients.
+- Role-based access control for organizer, captain, and player workflows.
+- Tournament registration, bracket generation, score updates, and winner tracking.
+- Roster rules that prevent overfilled teams and invalid player assignments.
+- DTO and mapper layer to avoid leaking JPA graphs directly through JSON.
+- Audit log records for score and bracket operations.
+- Swagger UI for API inspection.
+- H2 console for local database inspection.
+- Dockerfile using Java 21 runtime.
+- GitLab pipeline for test and package stages.
+
+## Demo Accounts
+
+All demo users use the same password:
+
+```text
+password
+```
+
+| Username | Role | Default Landing Page |
+| --- | --- | --- |
+| `organizer` | `ORGANIZER`, `CAPTAIN` | `/admin/dashboard` |
+| `captain` | `CAPTAIN` | `/captain/dashboard` |
+| `player` | `PLAYER` | `/player/dashboard` |
+
+Login page:
+
+```text
+http://localhost:8080/login
+```
+
+## Main Web Routes
+
+| Route | Access | Purpose |
+| --- | --- | --- |
+| `/` | Public | Redirects users toward the right entry point |
+| `/login` | Public | Form login |
+| `/admin/dashboard` | Organizer | Main operations dashboard |
+| `/captain/dashboard` | Captain | Captain view of events, squads, and API routes |
+| `/player/dashboard` | Player | Player view of events and read-only data |
+| `/tournaments` | Organizer, Captain, Player | Tournament list |
+| `/tournaments/{id}/bracket` | Organizer, Captain, Player | Bracket page |
+| `/tournaments/{id}/bracket/generate` | Organizer | Generate first-round bracket |
+| `/matches/score` | Organizer | Submit match score updates |
+| `/api-routes` | Authenticated | Redirects by role |
+| `/admin/api-routes` | Organizer | Full API route catalog |
+| `/captain/api-routes` | Captain | Captain-visible API route catalog |
+| `/player/api-routes` | Player | Player-visible API route catalog |
+
+## REST API
+
+Swagger UI:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+OpenAPI docs:
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| `POST` | `/api/auth/token` | Public | Issue a JWT bearer token |
+| `GET` | `/api/tournaments` | Player, Captain, Organizer | List tournaments |
+| `GET` | `/api/tournaments/{id}` | Player, Captain, Organizer | Fetch one tournament |
+| `GET` | `/api/tournaments/{id}/bracket` | Player, Captain, Organizer | Fetch bracket data |
+| `POST` | `/api/tournaments` | Organizer | Create a tournament |
+| `POST` | `/api/tournaments/{id}/teams/{teamId}` | Organizer | Register a team |
+| `POST` | `/api/tournaments/{id}/bracket` | Organizer | Generate bracket |
+| `GET` | `/api/teams` | Player, Captain, Organizer | List teams |
+| `GET` | `/api/teams/{id}` | Player, Captain, Organizer | Fetch team roster |
+| `POST` | `/api/teams` | Organizer | Create team |
+| `POST` | `/api/teams/{teamId}/players/{playerId}` | Organizer | Add player to team |
+| `GET` | `/api/players` | Player, Captain, Organizer | List players |
+| `GET` | `/api/players/{id}` | Player, Captain, Organizer | Fetch player profile |
+| `POST` | `/api/players` | Organizer | Create player |
+| `GET` | `/api/matches?tournamentId={id}` | Player, Captain, Organizer | List tournament matches |
+| `POST` | `/api/matches` | Organizer | Create match manually |
+| `PUT` | `/api/matches/{id}/score` | Organizer | Update score and winner |
+| `GET` | `/api/reports/dashboard` | Organizer | Dashboard metrics |
+| `GET` | `/api/reports/audit` | Organizer | Recent audit events |
+
+## Local Setup on Windows
+
+Required:
+
+- Java 21 JDK
+- Docker Desktop, only if you want to run the container
+
+Optional:
+
+- Global Maven install. The project includes `mvnw.cmd`, so Maven does not need to be installed globally.
+
+Check Java:
+
+```powershell
+java -version
+```
+
+Expected major version:
+
+```text
+21
+```
+
+Run tests:
+
+```powershell
+.\mvnw.cmd test
+```
+
+Run the app locally:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Then open:
+
+```text
+http://localhost:8080
+```
+
+## H2 Database
+
+The app uses an in-memory H2 database by default. Demo data is loaded on startup.
+
+H2 console:
+
+```text
+http://localhost:8080/h2-console
+```
+
+Use these values:
+
+| Field | Value |
+| --- | --- |
+| JDBC URL | `jdbc:h2:mem:arenadb` |
+| Username | `sa` |
+| Password | leave blank |
+
+The database resets when the application stops.
+
+## JWT Example
+
+PowerShell:
+
+```powershell
+$tokenResponse = Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://localhost:8080/api/auth/token" `
+  -ContentType "application/json" `
+  -Body '{"username":"captain","password":"password"}'
+
+$tokenResponse.token
+```
+
+Use the token:
+
+```powershell
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://localhost:8080/api/tournaments" `
+  -Headers @{ Authorization = "Bearer $($tokenResponse.token)" }
+```
+
+Bash/cURL:
+
+```bash
+curl -X POST http://localhost:8080/api/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"username":"captain","password":"password"}'
+```
+
+## Docker
+
+The Dockerfile uses a multi-stage build:
+
+- Build image: `maven:3.9-eclipse-temurin-21`
+- Runtime image: `amazoncorretto:21-alpine`
+
+Build the image:
+
+```powershell
+docker build -t arena-manager .
+```
+
+Run the container:
+
+```powershell
+docker run --name arena-manager -p 8080:8080 arena-manager
+```
+
+Open:
+
+```text
+http://localhost:8080
+```
+
+Run in the background:
+
+```powershell
+docker run -d --name arena-manager -p 8080:8080 arena-manager
+```
+
+View logs:
+
+```powershell
+docker logs -f arena-manager
+```
+
+Stop the container:
+
+```powershell
+docker stop arena-manager
+```
+
+Remove the stopped container:
+
+```powershell
+docker rm arena-manager
+```
+
+Run on another host port if `8080` is busy:
+
+```powershell
+docker run --name arena-manager -p 8081:8080 arena-manager
+```
+
+Then open:
+
+```text
+http://localhost:8081
+```
+
+
+
+## GitLab CI
+
+The pipeline is defined in `.gitlab-ci.yml`.
+
+It runs two stages:
+
+| Stage | Command | Output |
+| --- | --- | --- |
+| `test` | `mvn test` | Runs the test suite |
+| `package` | `mvn -DskipTests package` | Builds the application JAR |
+
+The package stage keeps the generated JAR from:
+
+```text
+target/*.jar
+```
 
 ## Architecture
 
@@ -39,82 +296,58 @@ Controller -> Service -> Repository -> Database
 
 ```text
 src/main/java/com/arenamanager/
+├── config        # Demo data and application setup
 ├── controller
-│   ├── rest      # JSON APIs for auth, teams, players, tournaments, matches, reports
-│   └── web       # Thymeleaf organizer dashboard and bracket views
-├── service       # Business logic, reporting, validation, audit creation
-├── repository    # Spring Data JPA access layer
-├── domain        # JPA entities and relational mappings
-├── dto           # Request, response, form, metrics, and audit DTOs
-├── mapper        # MapStruct entity/DTO mappers
-├── security      # JWT service, filter, session login, RBAC rules
-├── exception     # Custom exceptions and controller advice
-└── config        # Demo seed data
+│   ├── rest      # JSON API controllers
+│   └── web       # Thymeleaf page controllers
+├── domain        # JPA entities
+├── dto           # Request, response, form, route, and metric DTOs
+├── exception     # Custom exceptions and global handler
+├── mapper        # MapStruct mappers
+├── repository    # Spring Data repositories
+├── security      # JWT, form login, and route authorization
+└── service       # Business rules, reports, audit logging
 ```
 
 ## Entity Relationships
 
-- `Player` to `PlayerProfile`: one-to-one. `player_profiles.player_id` is unique.
-- `Team` to `Player`: one-to-many from team, many-to-one from player. `players.team_id` owns the foreign key.
-- `Tournament` to `Team`: many-to-many through `tournament_teams`.
-- `Tournament` to `BracketMatch`: one-to-many bracket structure.
-- `BracketMatch` to `Team`: many-to-one for home, away, and winner teams.
-- `AuditLog` to `Tournament` and `BracketMatch`: many-to-one audit context for score changes.
-
-## API Highlights
-
-| Method | Endpoint | Description |
+| Relationship | Mapping | Purpose |
 | --- | --- | --- |
-| `POST` | `/api/auth/token` | Authenticate and receive a JWT |
-| `GET` | `/api/tournaments/{id}/bracket` | Fetch a tournament bracket |
-| `POST` | `/api/tournaments/{id}/bracket` | Generate first-round matches |
-| `PUT` | `/api/matches/{id}/score` | Update a match score |
-| `GET` | `/api/reports/dashboard` | Fetch dashboard metrics |
-| `GET` | `/api/reports/audit` | Fetch recent audit events |
+| `Player` to `PlayerProfile` | One-to-one | Profile metadata such as hardware settings, grip style, and bio |
+| `Team` to `Player` | One-to-many / many-to-one | Team roster ownership through `players.team_id` |
+| `Tournament` to `Team` | Many-to-many | Registered squads through `tournament_teams` |
+| `Tournament` to `BracketMatch` | One-to-many | Tournament bracket structure |
+| `BracketMatch` to `Team` | Many-to-one | Home team, away team, and winner |
+| `AuditLog` to `Tournament` and `BracketMatch` | Many-to-one | Operational history for bracket and score changes |
 
-Swagger UI is available at:
+## Build Commands
 
-```text
-http://localhost:8080/swagger-ui/index.html
-```
-
-## Local Run
-
-Java 21 is required, and `JAVA_HOME` should point to your JDK 21 install. The Maven wrapper downloads Maven automatically on first use, so a global Maven install is optional.
+Compile:
 
 ```powershell
-.\mvnw.cmd spring-boot:run
+.\mvnw.cmd compile
 ```
 
-Then open:
-
-- Organizer dashboard: `http://localhost:8080/admin/dashboard`
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
-- H2 console: `http://localhost:8080/h2-console`
-
-Demo credentials:
-
-- Organizer web login: `organizer` / `password`
-- Captain/API login: `captain` / `password`
-
-Get a JWT:
-
-```bash
-curl -X POST http://localhost:8080/api/auth/token \
-  -H "Content-Type: application/json" \
-  -d "{\"username\":\"captain\",\"password\":\"password\"}"
-```
-
-Use the token with:
-
-```text
-Authorization: Bearer <token>
-```
-
-## Build and Test
+Test:
 
 ```powershell
 .\mvnw.cmd test
+```
+
+Package:
+
+```powershell
 .\mvnw.cmd package
-docker build -t arenamanager .
+```
+
+Skip tests while packaging:
+
+```powershell
+.\mvnw.cmd -DskipTests package
+```
+
+Run the generated JAR:
+
+```powershell
+java -jar target\arena-manager-0.0.1-SNAPSHOT.jar
 ```
