@@ -7,9 +7,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import lombok.Getter;
+
 
 import java.time.Instant;
 
+@Getter
 @MappedSuperclass
 public abstract class AbstractEntity {
 
@@ -35,15 +38,4 @@ public abstract class AbstractEntity {
         updatedAt = Instant.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
 }

@@ -6,7 +6,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "audit_logs")
 public class AuditLog extends AbstractEntity {
@@ -39,23 +41,4 @@ public class AuditLog extends AbstractEntity {
         this.match = match;
     }
 
-    public String getAction() {
-        return action;
-    }
-
-    public String getActor() {
-        return actor;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public Tournament getTournament() {
-        return tournament;
-    }
-
-    public BracketMatch getMatch() {
-        return match;
-    }
 }

@@ -9,6 +9,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "matches")
 public class BracketMatch extends AbstractEntity {
@@ -55,75 +60,4 @@ public class BracketMatch extends AbstractEntity {
         this.bestOf = bestOf;
     }
 
-    public Tournament getTournament() {
-        return tournament;
-    }
-
-    public void setTournament(Tournament tournament) {
-        this.tournament = tournament;
-    }
-
-    public Team getHomeTeam() {
-        return homeTeam;
-    }
-
-    public void setHomeTeam(Team homeTeam) {
-        this.homeTeam = homeTeam;
-    }
-
-    public Team getAwayTeam() {
-        return awayTeam;
-    }
-
-    public void setAwayTeam(Team awayTeam) {
-        this.awayTeam = awayTeam;
-    }
-
-    public Team getWinnerTeam() {
-        return winnerTeam;
-    }
-
-    public void setWinnerTeam(Team winnerTeam) {
-        this.winnerTeam = winnerTeam;
-    }
-
-    public int getRoundNumber() {
-        return roundNumber;
-    }
-
-    public void setRoundNumber(int roundNumber) {
-        this.roundNumber = roundNumber;
-    }
-
-    public int getBestOf() {
-        return bestOf;
-    }
-
-    public void setBestOf(int bestOf) {
-        this.bestOf = bestOf;
-    }
-
-    public int getHomeScore() {
-        return homeScore;
-    }
-
-    public void setHomeScore(int homeScore) {
-        this.homeScore = homeScore;
-    }
-
-    public int getAwayScore() {
-        return awayScore;
-    }
-
-    public void setAwayScore(int awayScore) {
-        this.awayScore = awayScore;
-    }
-
-    public MatchStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(MatchStatus status) {
-        this.status = status;
-    }
 }

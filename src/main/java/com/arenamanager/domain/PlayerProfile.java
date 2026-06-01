@@ -6,7 +6,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "player_profiles")
 public class PlayerProfile extends AbstractEntity {
@@ -33,35 +37,4 @@ public class PlayerProfile extends AbstractEntity {
         this.bio = bio;
     }
 
-    public Integer getPreferredPeripheralDpi() {
-        return preferredPeripheralDpi;
-    }
-
-    public void setPreferredPeripheralDpi(Integer preferredPeripheralDpi) {
-        this.preferredPeripheralDpi = preferredPeripheralDpi;
-    }
-
-    public String getMouseGripStyle() {
-        return mouseGripStyle;
-    }
-
-    public void setMouseGripStyle(String mouseGripStyle) {
-        this.mouseGripStyle = mouseGripStyle;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
 }
