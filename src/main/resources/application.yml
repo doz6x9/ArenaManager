@@ -26,8 +26,8 @@ spring:
 
 security:
   jwt:
-    secret: bXktdmVyeS1sb25nLWFyZW5hbWFuYWdlci1qd3Qtc2VjcmV0LWtleS0zMi1ieXRlcw==
-    expiration-ms: 3600000
+    secret: ${ARENA_JWT_SECRET:dGVzdC1vbmx5LWFyZW5hLW1hbmFnZXItand0LXNlY3JldC1rZXktMzItYnl0ZXM=}
+    expiration-ms: ${ARENA_JWT_EXPIRATION_MS:3600000}
 
 arena:
   demo-data: true

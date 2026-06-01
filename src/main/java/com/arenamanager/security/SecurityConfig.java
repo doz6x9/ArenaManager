@@ -1,5 +1,6 @@
 package com.arenamanager.security;
 
+import com.arenamanager.repository.UserAccountRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,13 +12,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -29,7 +32,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/h2-console/**"))
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/error", "/css/**", "/h2-console/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/error", "/css/**", "/h2-console/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/tournaments", "/api/tournaments/**",
@@ -86,7 +89,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+    UserDetailsService userDetailsService(PasswordEncoder passwordEncoder, UserAccountRepository userAccountRepository) {
         UserDetails organizer = User.withUsername("organizer")
                 .password(passwordEncoder.encode("password"))
                 .roles("ORGANIZER", "CAPTAIN")
@@ -100,7 +103,23 @@ public class SecurityConfig {
                 .password(passwordEncoder.encode("password"))
                 .roles("PLAYER")
                 .build();
-        return new InMemoryUserDetailsManager(organizer, captain, player);
+        Map<String, UserDetails> demoUsers = Map.of(
+                organizer.getUsername(), organizer,
+                captain.getUsername(), captain,
+                player.getUsername(), player
+        );
+        return username -> userAccountRepository.findByUsername(username)
+                .map(account -> User.withUsername(account.getUsername())
+                        .password(account.getPasswordHash())
+                        .roles(account.getRole())
+                        .build())
+                .orElseGet(() -> {
+                    UserDetails demoUser = demoUsers.get(username);
+                    if (demoUser != null) {
+                        return demoUser;
+                    }
+                    throw new UsernameNotFoundException("User not found: " + username);
+                });
     }
 
 

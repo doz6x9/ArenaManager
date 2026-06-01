@@ -15,7 +15,6 @@
     <nav class="top-actions" aria-label="Captain navigation">
         <a class="secondary link-button" th:href="@{/tournaments}">Tournaments</a>
         <a class="secondary link-button" th:href="@{/captain/api-routes}">API routes</a>
-        <a class="secondary link-button" th:href="@{/swagger-ui/index.html}">Swagger</a>
         <form th:action="@{/logout}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             <button type="submit" class="secondary">Sign out</button>

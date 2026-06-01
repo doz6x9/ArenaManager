@@ -31,6 +31,7 @@ The project is built to demonstrate a layered backend architecture with clean co
 - Organizer dashboard for tournaments, teams, match control, metrics, and audit activity.
 - Captain dashboard for registered squads, live brackets, and readable API route access.
 - Player dashboard for tournament visibility, roster context, and read-only event data.
+- Public self-registration for new player logins and profile metadata.
 - JWT token endpoint for REST clients.
 - Role-based access control for organizer, captain, and player workflows.
 - Tournament registration, bracket generation, score updates, and winner tracking.
@@ -62,12 +63,19 @@ Login page:
 http://localhost:8080/login
 ```
 
+Create a new player account:
+
+```text
+http://localhost:8080/register
+```
+
 ## Main Web Routes
 
 | Route | Access | Purpose |
 | --- | --- | --- |
 | `/` | Public | Redirects users toward the right entry point |
 | `/login` | Public | Form login |
+| `/register` | Public | Create a player login and profile |
 | `/admin/dashboard` | Organizer | Main operations dashboard |
 | `/captain/dashboard` | Captain | Captain view of events, squads, and API routes |
 | `/player/dashboard` | Player | Player view of events and read-only data |
@@ -97,6 +105,7 @@ http://localhost:8080/v3/api-docs
 | Method | Endpoint | Access | Description |
 | --- | --- | --- | --- |
 | `POST` | `/api/auth/token` | Public | Issue a JWT bearer token |
+| `POST` | `/api/auth/register` | Public | Create a player login/profile and return a JWT |
 | `GET` | `/api/tournaments` | Player, Captain, Organizer | List tournaments |
 | `GET` | `/api/tournaments/{id}` | Player, Captain, Organizer | Fetch one tournament |
 | `GET` | `/api/tournaments/{id}/bracket` | Player, Captain, Organizer | Fetch bracket data |
@@ -139,6 +148,8 @@ Expected major version:
 21
 ```
 
+The app includes a demo JWT signing secret so it can run immediately for local evaluation. For a real deployment, override it with `ARENA_JWT_SECRET`.
+
 Run tests:
 
 ```powershell
@@ -179,6 +190,17 @@ The database resets when the application stops.
 
 ## JWT Example
 
+The JWT signing key has a demo default in `application.yml`, so no environment variable is required for local evaluation.
+
+For production, override these environment variables:
+
+```text
+ARENA_JWT_SECRET
+ARENA_JWT_EXPIRATION_MS
+```
+
+The committed `.env.example` file shows the optional variable names. The real `.env` file is ignored by Git.
+
 PowerShell:
 
 ```powershell
@@ -206,6 +228,22 @@ Bash/cURL:
 curl -X POST http://localhost:8080/api/auth/token \
   -H "Content-Type: application/json" \
   -d '{"username":"captain","password":"password"}'
+```
+
+Register a new player account and receive a JWT:
+
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "newplayer",
+    "email": "newplayer@example.com",
+    "password": "password123",
+    "confirmPassword": "password123",
+    "preferredPeripheralDpi": 800,
+    "mouseGripStyle": "Claw",
+    "bio": "Duelist player looking for LAN brackets."
+  }'
 ```
 
 ## Docker
@@ -268,6 +306,28 @@ Then open:
 ```text
 http://localhost:8081
 ```
+
+### Docker Compose
+
+Docker Compose is the easiest way to run the current single-container setup:
+
+```powershell
+docker compose up --build
+```
+
+Open:
+
+```text
+http://localhost:8080
+```
+
+Stop and remove the container:
+
+```powershell
+docker compose down
+```
+
+The project currently uses H2, so Compose only starts the Spring Boot service. If MySQL is added later, Compose can be extended with a database service.
 
 
 

@@ -36,27 +36,16 @@
         <p class="message success-message" th:if="${param.logout}">
             You have signed out.
         </p>
+        <p class="message success-message" th:if="${param.registered}">
+            Account created. Sign in with your new player login.
+        </p>
 
         <div class="credential-grid">
-            <article>
-                <span>Organizer</span>
-                <code>organizer / password</code>
-                <p>Bracket generation, score updates, reporting, and roster setup.</p>
-            </article>
-            <article>
-                <span>Captain</span>
-                <code>captain / password</code>
-                <p>Read-only brackets, tournament status, team directory, and API route access.</p>
-            </article>
-            <article>
-                <span>Player</span>
-                <code>player / password</code>
-                <p>Read-only tournament, roster, and bracket access.</p>
-            </article>
+
         </div>
 
         <div class="auth-links">
-            <a class="secondary link-button" th:href="@{/swagger-ui/index.html}">Open Swagger</a>
+            <a class="secondary link-button" th:href="@{/register}">Create account</a>
         </div>
     </section>
 </main>

@@ -1,0 +1,7 @@
+services:
+  arena-manager:
+    build: .
+    image: arena-manager:latest
+    container_name: arena-manager
+    ports:
+      - "8080:8080"

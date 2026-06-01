@@ -57,7 +57,6 @@
                 <h2>Event Lobby</h2>
                 <p class="muted">Open a bracket board to follow the current round.</p>
             </div>
-            <a class="primary-link" th:href="@{/api/tournaments}">Tournaments API</a>
         </div>
         <div class="grid" th:if="${!#lists.isEmpty(tournaments)}">
             <article class="card" th:each="tournament : ${tournaments}">
@@ -80,7 +79,6 @@
             <div>
                 <div class="section-heading compact">
                     <h2>Registered Squads</h2>
-                    <a class="primary-link" th:href="@{/api/teams}">Teams API</a>
                 </div>
                 <div class="table-wrap">
                     <table>
@@ -104,21 +102,6 @@
                     </table>
                 </div>
             </div>
-            <div>
-                <div class="section-heading compact">
-                    <h2>Player API</h2>
-                    <a class="primary-link" th:href="@{/player/api-routes}">All routes</a>
-                </div>
-                <div class="route-list">
-                    <article class="route-item" th:each="route : ${apiRoutes}">
-                        <span class="method-badge" th:classappend="${' method-' + #strings.toLowerCase(route.method)}" th:text="${route.method}">GET</span>
-                        <div>
-                            <code class="endpoint" th:text="${route.path}">/api/tournaments</code>
-                            <p th:text="${route.description}">Route description</p>
-                        </div>
-                    </article>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -128,7 +111,6 @@
                 <h2>Roster Intel</h2>
                 <p class="muted">Player handles, team assignments, and visible setup details.</p>
             </div>
-            <a class="primary-link" th:href="@{/api/players}">Players API</a>
         </div>
         <div class="player-grid" th:if="${!#lists.isEmpty(players)}">
             <article class="player-card" th:each="player : ${players}">

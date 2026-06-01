@@ -10,6 +10,7 @@ public class ApiRouteCatalogService {
 
     private static final List<ApiRouteDto> ROUTES = List.of(
             new ApiRouteDto("POST", "/api/auth/token", "Authentication", "Public", "Issue a JWT bearer token for API clients."),
+            new ApiRouteDto("POST", "/api/auth/register", "Authentication", "Public", "Create a player login/profile and return a JWT bearer token."),
             new ApiRouteDto("GET", "/api/tournaments", "Tournaments", "Player + Captain + Organizer", "List tournament cards with registration and bracket summaries."),
             new ApiRouteDto("GET", "/api/tournaments/{id}", "Tournaments", "Player + Captain + Organizer", "Fetch one tournament with teams and matches."),
             new ApiRouteDto("GET", "/api/tournaments/{id}/bracket", "Tournaments", "Player + Captain + Organizer", "Fetch the live bracket for a tournament."),

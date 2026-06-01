@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
@@ -11,6 +12,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,5 +49,31 @@ class SecurityConfigTest {
                         .with(user("captain").roles("CAPTAIN"))
                         .with(csrf()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void registrationPageIsPublic() throws Exception {
+        mockMvc.perform(get("/register"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void publicApiRegistrationCreatesPlayerLoginAndToken() throws Exception {
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "rookie",
+                                  "email": "rookie@example.com",
+                                  "password": "password123",
+                                  "confirmPassword": "password123",
+                                  "preferredPeripheralDpi": 800,
+                                  "mouseGripStyle": "Claw",
+                                  "bio": "Registered from security test."
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.type").value("Bearer"))
+                .andExpect(jsonPath("$.token").isNotEmpty());
     }
 }
