@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class ReportingService {
+public class ReportingService extends AbstractService {
 
     private final TournamentRepository tournamentRepository;
     private final TeamRepository teamRepository;
@@ -38,6 +38,11 @@ public class ReportingService {
         this.bracketMatchRepository = bracketMatchRepository;
         this.auditLogRepository = auditLogRepository;
         this.auditLogMapper = auditLogMapper;
+    }
+
+    @Override
+    protected String serviceName() {
+        return "reporting";
     }
 
     @Transactional(readOnly = true)

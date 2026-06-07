@@ -10,7 +10,12 @@ import org.mapstruct.Mapping;
 import java.util.Locale;
 
 @Mapper(config = ArenaMapperConfig.class, uses = PlayerMapper.class, imports = Locale.class)
-public interface TeamMapper {
+public interface TeamMapper extends AbstractMapper {
+
+    @Override
+    default String mapperName() {
+        return "team";
+    }
 
     @Mapping(target = "tag", expression = "java(dto.tag().toUpperCase(Locale.ROOT))")
     Team toEntity(TeamRequestDto dto);

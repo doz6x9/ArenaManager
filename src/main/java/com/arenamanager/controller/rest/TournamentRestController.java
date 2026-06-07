@@ -17,12 +17,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tournaments")
-public class TournamentRestController {
+public class TournamentRestController extends AbstractRestController {
 
     private final TournamentService tournamentService;
 
     public TournamentRestController(TournamentService tournamentService) {
         this.tournamentService = tournamentService;
+    }
+
+    @Override
+    protected String resourceName() {
+        return "tournaments";
     }
 
     @GetMapping

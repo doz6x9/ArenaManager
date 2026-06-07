@@ -24,7 +24,12 @@ import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig extends AbstractSecurityConfig {
+
+    @Override
+    protected String securityName() {
+        return "spring-security";
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
@@ -53,12 +58,9 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler((request, response, authentication) -> {
-                            boolean isOrganizer = authentication.getAuthorities().stream()
-                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ORGANIZER"));
-                            boolean isCaptain = authentication.getAuthorities().stream()
-                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_CAPTAIN"));
-                            boolean isPlayer = authentication.getAuthorities().stream()
-                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_PLAYER"));
+                            boolean isOrganizer = hasAuthority(authentication, "ROLE_ORGANIZER");
+                            boolean isCaptain = hasAuthority(authentication, "ROLE_CAPTAIN");
+                            boolean isPlayer = hasAuthority(authentication, "ROLE_PLAYER");
 
                             if (isOrganizer) {
                                 SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);

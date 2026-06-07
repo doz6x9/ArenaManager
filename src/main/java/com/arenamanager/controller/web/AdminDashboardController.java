@@ -15,31 +15,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminDashboardController {
-
-    private final TournamentService tournamentService;
-    private final TeamService teamService;
-    private final PlayerService playerService;
-    private final ReportingService reportingService;
+public class AdminDashboardController extends AbstractDashboardController {
 
     public AdminDashboardController(
             TournamentService tournamentService,
             TeamService teamService,
             PlayerService playerService,
             ReportingService reportingService) {
-        this.tournamentService = tournamentService;
-        this.teamService = teamService;
-        this.playerService = playerService;
-        this.reportingService = reportingService;
+        super(tournamentService, teamService, playerService, reportingService);
     }
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        model.addAttribute("tournaments", tournamentService.listTournaments());
-        model.addAttribute("teams", teamService.listTeams());
-        model.addAttribute("players", playerService.listPlayers());
-        model.addAttribute("metrics", reportingService.dashboardMetrics());
-        model.addAttribute("auditEvents", reportingService.recentAuditEvents());
+        addArenaOverview(model);
+        model.addAttribute("auditEvents", reportingService().recentAuditEvents());
         return "dashboard";
     }
 
@@ -51,7 +40,7 @@ public class AdminDashboardController {
             RedirectAttributes redirectAttributes) {
         try {
             TeamRequestDto request = new TeamRequestDto(name, tag, maxRosterSize);
-            teamService.createTeam(request);
+            teamService().createTeam(request);
             redirectAttributes.addFlashAttribute("success", "Team '" + name + "' created successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to create team: " + e.getMessage());

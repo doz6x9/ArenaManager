@@ -19,7 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class TournamentService {
+public class TournamentService extends AbstractService {
 
     private final TournamentRepository tournamentRepository;
     private final TeamService teamService;
@@ -29,6 +29,11 @@ public class TournamentService {
         this.tournamentRepository = tournamentRepository;
         this.teamService = teamService;
         this.tournamentMapper = tournamentMapper;
+    }
+
+    @Override
+    protected String serviceName() {
+        return "tournament";
     }
 
     @Transactional
@@ -88,8 +93,9 @@ public class TournamentService {
     }
 
     Tournament requireTournament(Long id) {
-        return tournamentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found: " + id));
+        return requireFound(
+                tournamentRepository.findById(id),
+                () -> new ResourceNotFoundException("Tournament not found: " + id));
     }
 
     private void registerTeam(Tournament tournament, Team team) {

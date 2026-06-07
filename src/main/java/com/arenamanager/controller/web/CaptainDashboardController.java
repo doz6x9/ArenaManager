@@ -12,12 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/captain")
-public class CaptainDashboardController {
+public class CaptainDashboardController extends AbstractDashboardController {
 
-    private final TournamentService tournamentService;
-    private final TeamService teamService;
-    private final PlayerService playerService;
-    private final ReportingService reportingService;
     private final ApiRouteCatalogService apiRouteCatalogService;
 
     public CaptainDashboardController(
@@ -26,19 +22,13 @@ public class CaptainDashboardController {
             PlayerService playerService,
             ReportingService reportingService,
             ApiRouteCatalogService apiRouteCatalogService) {
-        this.tournamentService = tournamentService;
-        this.teamService = teamService;
-        this.playerService = playerService;
-        this.reportingService = reportingService;
+        super(tournamentService, teamService, playerService, reportingService);
         this.apiRouteCatalogService = apiRouteCatalogService;
     }
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        model.addAttribute("tournaments", tournamentService.listTournaments());
-        model.addAttribute("teams", teamService.listTeams());
-        model.addAttribute("players", playerService.listPlayers());
-        model.addAttribute("metrics", reportingService.dashboardMetrics());
+        addArenaOverview(model);
         model.addAttribute("apiRoutes", apiRouteCatalogService.captainRoutes());
         return "captain-dashboard";
     }

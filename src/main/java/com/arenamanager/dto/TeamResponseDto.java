@@ -9,5 +9,10 @@ public record TeamResponseDto(
         int maxRosterSize,
         int rosterCount,
         List<PlayerResponseDto> players
-) {
+) implements AbstractResponseDto {
+
+    @Override
+    public Long id() {
+        return id;
+    }
 }

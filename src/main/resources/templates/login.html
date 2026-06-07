@@ -1,11 +1,6 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ArenaManager Login</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('ArenaManager Login')}"></head>
 <body class="auth-page">
 <main class="auth-shell auth-wide">
     <section class="auth-panel login-panel">
@@ -41,11 +36,26 @@
         </p>
 
         <div class="credential-grid">
-
+            <article>
+                <strong>Organizer</strong>
+                <code>organizer / password</code>
+                <p>Bracket generation, score updates, reporting, and roster setup.</p>
+            </article>
+            <article>
+                <strong>Captain</strong>
+                <code>captain / password</code>
+                <p>Read-only brackets, tournament status, team directory, and API route access.</p>
+            </article>
+            <article>
+                <strong>Player</strong>
+                <code>player / password</code>
+                <p>Read-only tournament, roster, and bracket access.</p>
+            </article>
         </div>
 
         <div class="auth-links">
             <a class="secondary link-button" th:href="@{/register}">Create account</a>
+            <a class="secondary link-button" th:href="@{/swagger-ui/index.html}">Open Swagger</a>
         </div>
     </section>
 </main>

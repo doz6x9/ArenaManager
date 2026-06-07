@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class TeamService {
+public class TeamService extends AbstractService {
 
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
@@ -27,6 +27,11 @@ public class TeamService {
         this.teamRepository = teamRepository;
         this.playerRepository = playerRepository;
         this.teamMapper = teamMapper;
+    }
+
+    @Override
+    protected String serviceName() {
+        return "team";
     }
 
     @Transactional
@@ -58,8 +63,9 @@ public class TeamService {
     @Transactional
     public TeamResponseDto addPlayerToTeam(Long teamId, Long playerId) {
         Team team = requireTeam(teamId);
-        Player player = playerRepository.findById(playerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Player not found: " + playerId));
+        Player player = requireFound(
+                playerRepository.findById(playerId),
+                () -> new ResourceNotFoundException("Player not found: " + playerId));
         if (team.isRosterFull()) {
             throw new RosterFullException("Team roster is full: " + team.getName());
         }
@@ -71,7 +77,8 @@ public class TeamService {
     }
 
     Team requireTeam(Long id) {
-        return teamRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Team not found: " + id));
+        return requireFound(
+                teamRepository.findById(id),
+                () -> new ResourceNotFoundException("Team not found: " + id));
     }
 }

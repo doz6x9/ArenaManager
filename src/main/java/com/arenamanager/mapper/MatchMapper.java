@@ -6,7 +6,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(config = ArenaMapperConfig.class, uses = TeamMapper.class)
-public interface MatchMapper {
+public interface MatchMapper extends AbstractMapper {
+
+    @Override
+    default String mapperName() {
+        return "match";
+    }
 
     @Mapping(target = "tournamentId", source = "tournament.id")
     @Mapping(target = "status", expression = "java(match.getStatus().name())")

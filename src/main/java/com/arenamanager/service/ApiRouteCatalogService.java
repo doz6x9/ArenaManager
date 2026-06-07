@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ApiRouteCatalogService {
+public class ApiRouteCatalogService extends AbstractService {
 
     private static final List<ApiRouteDto> ROUTES = List.of(
             new ApiRouteDto("POST", "/api/auth/token", "Authentication", "Public", "Issue a JWT bearer token for API clients."),
@@ -30,6 +30,11 @@ public class ApiRouteCatalogService {
             new ApiRouteDto("GET", "/api/reports/dashboard", "Reports", "Organizer", "Read operational dashboard metrics."),
             new ApiRouteDto("GET", "/api/reports/audit", "Reports", "Organizer", "Read recent score and bracket audit events.")
     );
+
+    @Override
+    protected String serviceName() {
+        return "api-route-catalog";
+    }
 
     public List<ApiRouteDto> listRoutes() {
         return ROUTES;

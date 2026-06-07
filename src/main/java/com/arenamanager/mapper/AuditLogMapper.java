@@ -6,7 +6,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(config = ArenaMapperConfig.class)
-public interface AuditLogMapper {
+public interface AuditLogMapper extends AbstractMapper {
+
+    @Override
+    default String mapperName() {
+        return "audit-log";
+    }
 
     @Mapping(target = "tournamentId", source = "tournament.id")
     @Mapping(target = "tournamentName", source = "tournament.name")

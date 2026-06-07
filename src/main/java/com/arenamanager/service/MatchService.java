@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class MatchService {
+public class MatchService extends AbstractService {
 
     private final BracketMatchRepository bracketMatchRepository;
     private final TournamentRepository tournamentRepository;
@@ -43,10 +43,16 @@ public class MatchService {
         this.matchMapper = matchMapper;
     }
 
+    @Override
+    protected String serviceName() {
+        return "match";
+    }
+
     @Transactional
     public MatchResponseDto createMatch(MatchRequestDto request) {
-        Tournament tournament = tournamentRepository.findById(request.tournamentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Tournament not found: " + request.tournamentId()));
+        Tournament tournament = requireFound(
+                tournamentRepository.findById(request.tournamentId()),
+                () -> new ResourceNotFoundException("Tournament not found: " + request.tournamentId()));
         Team homeTeam = request.homeTeamId() == null ? null : teamService.requireTeam(request.homeTeamId());
         Team awayTeam = request.awayTeamId() == null ? null : teamService.requireTeam(request.awayTeamId());
         validateRegistered(tournament, homeTeam);
@@ -70,8 +76,9 @@ public class MatchService {
         if (homeScore < 0 || awayScore < 0) {
             throw new BusinessRuleException("Scores must be zero or greater");
         }
-        BracketMatch match = bracketMatchRepository.findById(matchId)
-                .orElseThrow(() -> new ResourceNotFoundException("Match not found: " + matchId));
+        BracketMatch match = requireFound(
+                bracketMatchRepository.findById(matchId),
+                () -> new ResourceNotFoundException("Match not found: " + matchId));
         int previousHomeScore = match.getHomeScore();
         int previousAwayScore = match.getAwayScore();
         match.setHomeScore(homeScore);

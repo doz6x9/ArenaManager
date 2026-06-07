@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class ApiRouteWebController {
+public class ApiRouteWebController extends AbstractWebController {
 
     private final ApiRouteCatalogService apiRouteCatalogService;
 
@@ -53,8 +53,4 @@ public class ApiRouteWebController {
         model.addAttribute("routeCount", apiRouteCatalogService.listRoutes().size());
     }
 
-    private boolean hasRole(Authentication authentication, String role) {
-        return authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals(role));
-    }
 }

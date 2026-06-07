@@ -6,7 +6,12 @@ import com.arenamanager.dto.TournamentResponseDto;
 import org.mapstruct.Mapper;
 
 @Mapper(config = ArenaMapperConfig.class, uses = {TeamMapper.class, MatchMapper.class})
-public interface TournamentMapper {
+public interface TournamentMapper extends AbstractMapper {
+
+    @Override
+    default String mapperName() {
+        return "tournament";
+    }
 
     Tournament toEntity(TournamentRequestDto dto);
 

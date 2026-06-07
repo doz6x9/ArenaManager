@@ -20,12 +20,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/matches")
-public class MatchRestController {
+public class MatchRestController extends AbstractRestController {
 
     private final MatchService matchService;
 
     public MatchRestController(MatchService matchService) {
         this.matchService = matchService;
+    }
+
+    @Override
+    protected String resourceName() {
+        return "matches";
     }
 
     @GetMapping

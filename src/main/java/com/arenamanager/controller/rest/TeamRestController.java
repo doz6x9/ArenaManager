@@ -17,12 +17,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/teams")
-public class TeamRestController {
+public class TeamRestController extends AbstractRestController {
 
     private final TeamService teamService;
 
     public TeamRestController(TeamService teamService) {
         this.teamService = teamService;
+    }
+
+    @Override
+    protected String resourceName() {
+        return "teams";
     }
 
     @GetMapping

@@ -11,5 +11,10 @@ public record AuditLogResponseDto(
         Long tournamentId,
         String tournamentName,
         Long matchId
-) {
+) implements AbstractResponseDto {
+
+    @Override
+    public Long id() {
+        return id;
+    }
 }

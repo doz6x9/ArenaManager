@@ -1,9 +1,8 @@
 package com.arenamanager.repository;
 
 import com.arenamanager.domain.Team;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TeamRepository extends JpaRepository<Team, Long> {
+public interface TeamRepository extends AbstractRepository<Team> {
 
     boolean existsByName(String name);
 

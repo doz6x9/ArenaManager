@@ -13,7 +13,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class DemoDataConfig {
+public class DemoDataConfig extends AbstractApplicationConfig {
+
+    @Override
+    protected String configName() {
+        return "demo-data";
+    }
 
     @Bean
     CommandLineRunner seedDemoData(
@@ -22,7 +27,7 @@ public class DemoDataConfig {
             @Value("${arena.demo-data:true}") boolean demoData
     ) {
         return args -> {
-            if (!demoData || teamRepository.count() > 0) {
+            if (!shouldSeedDemoData(demoData, teamRepository.count())) {
                 return;
             }
 

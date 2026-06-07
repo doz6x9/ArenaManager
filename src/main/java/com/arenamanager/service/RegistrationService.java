@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.Set;
 
 @Service
-public class RegistrationService {
+public class RegistrationService extends AbstractService {
 
     private static final Set<String> RESERVED_USERNAMES = Set.of("organizer", "captain", "player");
 
@@ -35,6 +35,11 @@ public class RegistrationService {
         this.userAccountRepository = userAccountRepository;
         this.passwordEncoder = passwordEncoder;
         this.playerMapper = playerMapper;
+    }
+
+    @Override
+    protected String serviceName() {
+        return "registration";
     }
 
     @Transactional

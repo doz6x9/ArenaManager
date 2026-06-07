@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping
-public class MatchWebController {
+public class MatchWebController extends AbstractWebController {
 
     private final TournamentService tournamentService;
     private final MatchService matchService;
@@ -32,8 +32,7 @@ public class MatchWebController {
         model.addAttribute("matches", matchService.listMatchesForTournament(tournamentId));
         model.addAttribute("scoreUpdateForm", new ScoreUpdateForm());
         model.addAttribute("canManageBracket", canManageBracket);
-        model.addAttribute("homePath", canManageBracket ? "/admin/dashboard" : "/captain/dashboard");
-        model.addAttribute("homeLabel", canManageBracket ? "Organizer dashboard" : "Captain dashboard");
+        addHomeNavigation(model, authentication);
         return "bracket";
     }
 
@@ -57,8 +56,4 @@ public class MatchWebController {
         return "redirect:/tournaments/" + form.getTournamentId() + "/bracket";
     }
 
-    private boolean hasRole(Authentication authentication, String role) {
-        return authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals(role));
-    }
 }

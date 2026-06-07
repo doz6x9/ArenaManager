@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
-public class AuthRestController {
+public class AuthRestController extends AbstractRestController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -34,6 +34,11 @@ public class AuthRestController {
         this.jwtService = jwtService;
         this.registrationService = registrationService;
         this.userDetailsService = userDetailsService;
+    }
+
+    @Override
+    protected String resourceName() {
+        return "auth";
     }
 
     @PostMapping("/token")

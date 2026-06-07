@@ -16,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class PlayerService {
+public class PlayerService extends AbstractService {
 
     private final PlayerRepository playerRepository;
     private final TeamService teamService;
@@ -26,6 +26,11 @@ public class PlayerService {
         this.playerRepository = playerRepository;
         this.teamService = teamService;
         this.playerMapper = playerMapper;
+    }
+
+    @Override
+    protected String serviceName() {
+        return "player";
     }
 
     @Transactional
@@ -61,7 +66,8 @@ public class PlayerService {
     }
 
     Player requirePlayer(Long id) {
-        return playerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Player not found: " + id));
+        return requireFound(
+                playerRepository.findById(id),
+                () -> new ResourceNotFoundException("Player not found: " + id));
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class TournamentWebController {
+public class TournamentWebController extends AbstractWebController {
 
     private final TournamentService tournamentService;
     private final TeamService teamService;
@@ -22,18 +22,7 @@ public class TournamentWebController {
     public String listTournaments(Model model, Authentication authentication) {
         model.addAttribute("tournaments", tournamentService.listTournaments());
         model.addAttribute("teams", teamService.listTeams());
-        if (hasRole(authentication, "ROLE_ORGANIZER")) {
-            model.addAttribute("homePath", "/admin/dashboard");
-            model.addAttribute("homeLabel", "Organizer dashboard");
-        } else {
-            model.addAttribute("homePath", "/captain/dashboard");
-            model.addAttribute("homeLabel", "Captain dashboard");
-        }
+        addHomeNavigation(model, authentication);
         return "tournaments";
-    }
-
-    private boolean hasRole(Authentication authentication, String role) {
-        return authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals(role));
     }
 }

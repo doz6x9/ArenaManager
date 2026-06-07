@@ -7,7 +7,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(config = ArenaMapperConfig.class, uses = PlayerProfileMapper.class)
-public interface PlayerMapper {
+public interface PlayerMapper extends AbstractMapper {
+
+    @Override
+    default String mapperName() {
+        return "player";
+    }
 
     @Mapping(target = "team", ignore = true)
     Player toEntity(PlayerRequestDto dto);

@@ -10,5 +10,10 @@ public record TournamentResponseDto(
         boolean registrationOpen,
         List<TeamSummaryDto> registeredTeams,
         List<MatchResponseDto> matches
-) {
+) implements AbstractResponseDto {
+
+    @Override
+    public Long id() {
+        return id;
+    }
 }

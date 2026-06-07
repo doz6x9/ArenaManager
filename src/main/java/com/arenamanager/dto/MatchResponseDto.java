@@ -11,5 +11,10 @@ public record MatchResponseDto(
         int homeScore,
         int awayScore,
         String status
-) {
+) implements AbstractResponseDto {
+
+    @Override
+    public Long id() {
+        return id;
+    }
 }

@@ -7,5 +7,10 @@ public record PlayerResponseDto(
         Long teamId,
         String teamName,
         PlayerProfileDto profile
-) {
+) implements AbstractResponseDto {
+
+    @Override
+    public Long id() {
+        return id;
+    }
 }

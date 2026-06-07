@@ -17,12 +17,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/players")
-public class PlayerRestController {
+public class PlayerRestController extends AbstractRestController {
 
     private final PlayerService playerService;
 
     public PlayerRestController(PlayerService playerService) {
         this.playerService = playerService;
+    }
+
+    @Override
+    protected String resourceName() {
+        return "players";
     }
 
     @GetMapping

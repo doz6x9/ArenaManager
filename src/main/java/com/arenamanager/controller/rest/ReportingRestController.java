@@ -11,12 +11,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reports")
-public class ReportingRestController {
+public class ReportingRestController extends AbstractRestController {
 
     private final ReportingService reportingService;
 
     public ReportingRestController(ReportingService reportingService) {
         this.reportingService = reportingService;
+    }
+
+    @Override
+    protected String resourceName() {
+        return "reports";
     }
 
     @GetMapping("/dashboard")
