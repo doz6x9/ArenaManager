@@ -1,9 +1,15 @@
 package com.arenamanager.controller.web;
 
+import com.arenamanager.AbstractLayerComponent;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 
-public abstract class AbstractWebController {
+public abstract class AbstractWebController implements AbstractLayerComponent {
+
+    @Override
+    public String componentName() {
+        return "web-controller";
+    }
 
     protected boolean isSignedIn(Authentication authentication) {
         return authentication != null

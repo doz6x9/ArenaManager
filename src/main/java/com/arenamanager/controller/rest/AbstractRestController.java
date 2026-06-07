@@ -1,6 +1,13 @@
 package com.arenamanager.controller.rest;
 
-public abstract class AbstractRestController {
+import com.arenamanager.AbstractLayerComponent;
+
+public abstract class AbstractRestController implements AbstractLayerComponent {
 
     protected abstract String resourceName();
+
+    @Override
+    public String componentName() {
+        return "rest-controller:" + resourceName();
+    }
 }

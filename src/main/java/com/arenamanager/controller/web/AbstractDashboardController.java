@@ -24,6 +24,11 @@ public abstract class AbstractDashboardController extends AbstractWebController 
         this.reportingService = reportingService;
     }
 
+    @Override
+    public String componentName() {
+        return "web-dashboard-controller";
+    }
+
     protected void addArenaOverview(Model model) {
         model.addAttribute("tournaments", tournamentService.listTournaments());
         model.addAttribute("teams", teamService.listTeams());

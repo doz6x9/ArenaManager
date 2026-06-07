@@ -1,6 +1,13 @@
 package com.arenamanager.dto;
 
-public interface AbstractResponseDto {
+import com.arenamanager.AbstractLayerComponent;
+
+public interface AbstractResponseDto extends AbstractLayerComponent {
 
     Long id();
+
+    @Override
+    default String componentName() {
+        return "response-dto";
+    }
 }
